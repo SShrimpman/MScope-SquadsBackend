@@ -17,7 +17,8 @@ use App\Http\Controllers\UserController;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    $user = Auth::user();
+    return response()->json($user, 200);
 });
 
 Route::post('/login', [UserController::class, 'login']);

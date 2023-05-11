@@ -18,7 +18,7 @@ class UserController extends Controller
             $user = Auth::user();
             $token = $user->createToken('JWT');
 
-            return response()->json($token, 200);
+            return response()->json($token->plainTextToken, 200);
         }
 
         return response()->json('Invalid User', 401);
