@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PersonController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,10 +16,10 @@ use App\Http\Controllers\PersonController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/login', [PersonController::class, 'login']);
-Route::apiResource('people', PersonController::class)->except(['create', 'edit']);
+Route::post('/login', [UserController::class, 'login']);
+Route::apiResource('users', UserController::class)->except(['create', 'edit']);
 Route::apiResource('roles', RoleController::class)->except(['create', 'edit', 'show', 'update', 'destroy', 'store']);

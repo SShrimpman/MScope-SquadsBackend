@@ -2,36 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Person;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\StorePersonRequest;
-use App\Http\Requests\UpdatePersonRequest;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
-class PersonController extends Controller
+class UserController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->only('firstName', 'lastName', 'password');
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+            $user = Auth::user();
+            $token = $user->createToken('JWT');
 
-        // Find the person using the provided firstName and lastName
-        $person = Person::where('firstName', $credentials['firstName'])
-            ->where('lastName', $credentials['lastName'])
-            ->first();
-
-        // If a person is found and the password is correct
-        if ($person && Hash::check($credentials['password'], $person->password)) {
-            Auth::login($person);
-
-            // Authentication successful
-            $token = $person->createToken('authToken')->plainTextToken;
-            return response()->json(['token' => $token]);
+            return response()->json($token, 200);
         }
 
-        // Authentication failed
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return response()->json('Invalid User', 401);
     }
+
 
     /**
      * Display a listing of the resource.
@@ -41,7 +33,7 @@ class PersonController extends Controller
     public function index()
     {
         try{
-            return response()->json(Person::all(), 200);
+            return response()->json(User::all(), 200);
         } catch (\Exception $exception){
             return response()->json(['error'=>$exception],500);
         }
@@ -50,10 +42,10 @@ class PersonController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorePersonRequest  $request
+     * @param  \App\Http\Requests\StoreUserRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePersonRequest $request)
+    public function store(StoreUserRequest $request)
     {
         // Validate the input data
         $validatedData = $request->validate([
@@ -72,23 +64,23 @@ class PersonController extends Controller
             $validatedData['password'] = bcrypt($validatedData['password']);
         }
 
-        // Create the person
-        $person = Person::create($validatedData);
+        // Create the user
+        $user = User::create($validatedData);
 
-        // Return the created person as a response
-        return response()->json($person, 201);
+        // Return the created user as a response
+        return response()->json($user, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Person  $person
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(Person $person)
+    public function show(User $user)
     {
         try {
-            return response()->json($person,200);
+            return response()->json($user,200);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
@@ -97,11 +89,11 @@ class PersonController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatePersonRequest  $request
-     * @param  \App\Models\Person  $person
+     * @param  \App\Http\Requests\UpdateUserRequest  $request
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePersonRequest $request, Person $person)
+    public function update(UpdateUserRequest $request, User $user)
     {
         try{
             // Validate the input data
@@ -118,11 +110,11 @@ class PersonController extends Controller
                 $validatedData['password'] = bcrypt($request->input('password'));
             }
 
-            // Update the person with the validated data
-            $person->update($validatedData);
+            // Update the user with the validated data
+            $user->update($validatedData);
 
-            // Build the response message with the person's first name and last name
-            $message = "{$person->firstName} {$person->lastName} was updated successfully";
+            // Build the response message with the user's first name and last name
+            $message = "{$user->firstName} {$user->lastName} was updated successfully";
             
             // Return a response indicating the successful update
             return response()->json(['message' => $message]);
@@ -134,17 +126,17 @@ class PersonController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Person  $person
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Person $person)
+    public function destroy(User $user)
     {
         try {
-            // Delete the person
-            $person->delete();
+            // Delete the user
+            $user->delete();
 
-            // Build the response message with the person's first name and last name
-            $message = "{$person->firstName} {$person->lastName} was deleted successfully";
+            // Build the response message with the user's first name and last name
+            $message = "{$user->firstName} {$user->lastName} was deleted successfully";
 
             // Return a response indicating the successful delete
             return response()->json(['message' => $message], 205);
