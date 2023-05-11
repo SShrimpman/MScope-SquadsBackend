@@ -24,6 +24,13 @@ class UserController extends Controller
         return response()->json('Invalid User', 401);
     }
 
+    public function logout()
+    {
+        Auth::logout();
+
+        return response()->json('Logged out');
+    }
+
 
     /**
      * Display a listing of the resource.
