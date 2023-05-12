@@ -136,6 +136,17 @@ class SquadController extends Controller
      */
     public function destroy(Squad $squad)
     {
-        //
+        try {
+            // Delete the squad
+            $squad->delete();
+
+            // Build the response message with the squad's name
+            $message = "{$squad->squadName} was deleted successfully";
+
+            // Return a response indicating the successful delete
+            return response()->json(['message' => $message], 205);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }
