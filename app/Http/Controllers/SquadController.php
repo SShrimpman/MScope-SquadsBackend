@@ -76,17 +76,6 @@ class SquadController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Squad  $squad
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Squad $squad)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateSquadRequest  $request
@@ -95,7 +84,48 @@ class SquadController extends Controller
      */
     public function update(UpdateSquadRequest $request, Squad $squad)
     {
-        //
+        try {
+            // Validate the input data
+            $validatedData = $request->validate([
+                'squadName' => 'required',
+                'reference' => 'required|string',
+                'user_id' => 'array',
+                'user_id.*' => 'exists:users,id',
+            ]);
+        
+            // Update the squad with the validated data
+            $squad->update($validatedData);
+        
+            // Link users to the squad if provided
+            $user_ids = $request->input('user_id');
+            if ($user_ids) {
+                $users = User::whereIn('id', $user_ids)->get();
+                $squad->users()->sync($users);
+            } else {
+                $squad->users()->detach();
+            }
+        
+            // Fetch the updated squad data with the user IDs
+            $squad = $squad->fresh('users');
+        
+            // Build the response data
+            $response = [
+                'squadName' => $squad->squadName,
+                'reference' => $squad->reference,
+                'user_ids' => $squad->users->pluck('id')->toArray(),
+                'updated_at' => $squad->updated_at,
+                'created_at' => $squad->created_at,
+                'id' => $squad->id,
+            ];
+        
+            // Build the response message with the squad's name
+            $message = "{$squad->squadName} was updated successfully";
+        
+            return response()->json(['message' => $message, 'squad' => $response]);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
+        
     }
 
     /**
