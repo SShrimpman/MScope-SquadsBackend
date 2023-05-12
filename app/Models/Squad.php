@@ -16,7 +16,8 @@ class Squad extends Model
         'squadName',
         'reference'  
     ];
-    public function people(){
-        return $this->belongsToMany(Person::class);
+    
+    public function users(){
+        return $this->belongsToMany(User::class);
     }
 }
