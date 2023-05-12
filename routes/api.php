@@ -18,9 +18,9 @@ use App\Http\Controllers\SquadController;
 |
 */
 Route::post('/login', [LoginController::class, 'login']);
-Route::get('/logout', [LoginController::class, 'logout']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout']);
     Route::apiResource('roles', RoleController::class)->except(['create', 'edit', 'show', 'update', 'destroy', 'store']);
     Route::apiResource('users', UserController::class)->except(['create', 'edit']);
     Route::apiResource('squads', SquadController::class)->except(['create', 'edit']);
