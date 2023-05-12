@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SquadController;
 
 /*
@@ -16,14 +17,11 @@ use App\Http\Controllers\SquadController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::post('/login', [LoginController::class, 'login']);
+Route::get('/logout', [LoginController::class, 'logout']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    $user = Auth::user();
-    return response()->json($user, 200);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::apiResource('roles', RoleController::class)->except(['create', 'edit', 'show', 'update', 'destroy', 'store']);
+    Route::apiResource('users', UserController::class)->except(['create', 'edit']);
+    Route::apiResource('squads', SquadController::class)->except(['create', 'edit']);
 });
-
-Route::post('/login', [UserController::class, 'login']);
-Route::get('/logout', [UserController::class, 'logout']);
-Route::apiResource('roles', RoleController::class)->except(['create', 'edit', 'show', 'update', 'destroy', 'store']);
-Route::apiResource('users', UserController::class)->except(['create', 'edit']);
-Route::apiResource('squads', SquadController::class)->except(['create', 'edit']);
