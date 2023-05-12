@@ -74,23 +74,15 @@ class UserController extends Controller
         // Create the user
         $user = User::create($validatedData);
 
-        // Return the created user as a response
-        return response()->json($user, 201);
-    }
+        // Prepare the response data
+        $message = "{$user->firstName} {$user->lastName} was created successfully";
+        $responseData = [
+            'message' => $message,
+            'user' => $user,
+        ];
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        try {
-            return response()->json($user,200);
-        } catch (\Exception $exception) {
-            return response()->json(['error' => $exception], 500);
-        }
+        // Return the created user as a response
+        return response()->json($responseData, 201);
     }
 
     /**
