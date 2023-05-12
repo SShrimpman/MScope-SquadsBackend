@@ -7,31 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Middleware\Authenticate;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
-    public function login(Request $request)
-    {
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            $user = Auth::user();
-            $token = $user->createToken('JWT');
-
-            return response()->json($token->plainTextToken, 200);
-        }
-
-        return response()->json('Invalid User', 401);
-    }
-
-    public function logout()
-    {
-        Auth::logout();
-
-        return response()->json('Logged out');
-    }
-
-
     /**
      * Display a listing of the resource.
      *

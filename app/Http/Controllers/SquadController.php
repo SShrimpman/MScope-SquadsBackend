@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Squad;
+use App\Http\Middleware\Authenticate;
 use App\Http\Requests\StoreSquadRequest;
 use App\Http\Requests\UpdateSquadRequest;
 
