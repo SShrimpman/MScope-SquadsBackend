@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
         $user = [
             ['firstName' => 'Francis', 'lastName' => 'Kings', 'username' => 'FK', 'password' => Hash::make('123'), 'role_id' => 1],
             ['firstName' => 'John', 'lastName' => 'Stream', 'username' => 'JS', 'password' => Hash::make('123'), 'role_id' => 2,],
-            ['firstName' => 'Anthony', 'lastName' => 'Shrimp', 'username' => 'AC', 'password' => Hash::make('123'), 'role_id' => 3,],
+            ['firstName' => 'Anthony', 'lastName' => 'Shrimp', 'username' => 'AS', 'password' => Hash::make('123'), 'role_id' => 3,],
             ['firstName' => 'Nathaniel', 'lastName' => 'Days', 'username' => 'ND', 'password' => Hash::make('123'), 'role_id' => 3,],
             ['firstName' => 'Richard', 'lastName' => 'Scallop', 'username' => 'RS', 'password' => Hash::make('123'), 'role_id' => 3,],
         ];
