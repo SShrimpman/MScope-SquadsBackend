@@ -18,6 +18,7 @@ use App\Http\Controllers\SquadController;
 |
 */
 Route::post('/login', [LoginController::class, 'login']);
+Route::get('/login/verify', [LoginController::class, 'verify']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout']);
