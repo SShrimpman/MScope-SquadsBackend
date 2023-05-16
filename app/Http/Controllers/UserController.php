@@ -120,7 +120,7 @@ class UserController extends Controller
             $message = "{$user->firstName} {$user->lastName} was deleted successfully";
 
             // Return a response indicating the successful delete
-            return response()->json(['message' => $message], 205);
+            return response()->json(['message' => $message], 200);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
