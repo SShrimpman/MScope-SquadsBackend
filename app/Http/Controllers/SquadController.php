@@ -25,6 +25,7 @@ class SquadController extends Controller
                     'squadName' => $squad->squadName,
                     'reference' => $squad->reference,
                     'user_ids' => $squad->users->pluck('id')->toArray(),
+                    'users' => $squad->users->toArray(),
                     'deleted_at' => $squad->deleted_at,
                     'created_at' => $squad->created_at,
                     'updated_at' => $squad->updated_at,
@@ -53,27 +54,28 @@ class SquadController extends Controller
 
         $squad = Squad::create($validatedData);
 
-        // Link users to the squad if provided
         $user_ids = $request->input('user_id');
+        $users = [];
+
         if ($user_ids) {
             $users = User::whereIn('id', $user_ids)->get();
             $squad->users()->attach($users);
         }
 
-        // Fetch the updated squad data with the user IDs
         $squad->load('users');
 
-        // Prepare the response data
-        $response = [
+        $responseData = [
+            'message' => "{$squad->squadName} was created successfully",
             'squadName' => $squad->squadName,
             'reference' => $squad->reference,
             'user_ids' => $squad->users->pluck('id')->toArray(),
+            'users' => $squad->users->toArray(),
             'updated_at' => $squad->updated_at,
             'created_at' => $squad->created_at,
             'id' => $squad->id,
         ];
 
-        return response()->json($response);
+        return response()->json($responseData, 200);
     }
 
     /**
