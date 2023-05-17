@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Middleware\Authenticate;
@@ -82,7 +83,11 @@ class UserController extends Controller
                 'firstName' => 'required|string',
                 'lastName' => 'required|string',
                 'username' => 'required|string',
-                'role_id' => 'required|exists:roles,id',
+                'role_id' => [
+                    'required',
+                    Rule::exists('roles', 'id'),
+                ],
+                // 'role_id' => 'required|exists:roles,id',
             ]);
 
             // Check if the password field is present in the request
@@ -94,11 +99,18 @@ class UserController extends Controller
             // Update the user with the validated data
             $user->update($validatedData);
 
+            // Load the role relationship
+            $user->load('role');
+
             // Build the response message with the user's first name and last name
             $message = "{$user->firstName} {$user->lastName} was updated successfully";
+            $responseData = [
+                'message' => $message,
+                'user' => new UserResource($user),
+            ];
             
             // Return a response indicating the successful update
-            return response()->json(['message' => $message]);
+            return response()->json($responseData, 200);
         } catch(\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
