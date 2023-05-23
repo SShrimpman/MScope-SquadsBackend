@@ -90,17 +90,17 @@ class SquadController extends Controller
         try {
             // Validate the input data
             $validatedData = $request->validate([
-                'squadName' => 'required',
+                'squadName' => 'required|string',
                 'reference' => 'required|string',
-                'user_id' => 'array',
-                'user_id.*' => 'exists:users,id',
+                'user_ids' => 'array',
+                'user_ids.*' => 'exists:users,id',
             ]);
         
             // Update the squad with the validated data
             $squad->update($validatedData);
         
             // Link users to the squad if provided
-            $user_ids = $request->input('user_id');
+            $user_ids = $request->input('user_ids');
             if ($user_ids) {
                 $users = User::whereIn('id', $user_ids)->get();
                 $squad->users()->sync($users);
@@ -128,7 +128,6 @@ class SquadController extends Controller
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
-        
     }
 
     /**
