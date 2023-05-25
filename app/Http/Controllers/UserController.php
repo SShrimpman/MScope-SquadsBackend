@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Middleware\Authenticate;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -96,6 +97,21 @@ class UserController extends Controller
                 $validatedData['password'] = bcrypt($request->input('password'));
             }
 
+            // Check if the role is being updated
+            if ($user->role_id != $validatedData['role_id']) {
+                // Check if the user being updated is currently an 'Admin'
+                if ($user->role->name === 'Admin') {
+                    // Check if there are other users with the 'Admin' role
+                    $adminCount = User::where('role_id', $validatedData['role_id'])
+                        ->where('id', '!=', $user->id)
+                        ->count();
+
+                    if ($adminCount > 1) {
+                        return response()->json(['error' => 'Need to have at least one admin in the App!'], 400);
+                    }
+                }
+            }
+
             // Update the user with the validated data
             $user->update($validatedData);
 
@@ -111,8 +127,10 @@ class UserController extends Controller
             
             // Return a response indicating the successful update
             return response()->json($responseData, 200);
-        } catch(\Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        } catch (ValidationException $exception) {
+            return response()->json(['error' => $exception->errors()], 400);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
